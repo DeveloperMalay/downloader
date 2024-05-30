@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:downloader/presentation/screens/home_screen/cubit/download_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,12 +6,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'presentation/presentation.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+  MyApp({super.key});
+  final botToastBuilder = BotToastInit();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
