@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'download_cubit.dart';
 
 enum DownloadStauts {
@@ -11,23 +10,23 @@ enum DownloadStauts {
 class DownloadState extends Equatable {
   const DownloadState({
     required this.status,
-    this.image,
+    required this.imageList,
   });
   final DownloadStauts status;
-  final String? image;
+  final List<ImageDataModel> imageList;
   factory DownloadState.initial() {
-    return const DownloadState(status: DownloadStauts.intial);
+    return const DownloadState(status: DownloadStauts.intial, imageList: []);
   }
   @override
-  List<Object> get props => [status, image ?? ''];
+  List<Object> get props => [status, imageList];
 
   DownloadState copyWith({
     DownloadStauts? status,
-    String? image,
+    List<ImageDataModel>? imageList,
   }) {
     return DownloadState(
       status: status ?? this.status,
-      image: image ?? this.image,
+      imageList: imageList ?? this.imageList,
     );
   }
 }
