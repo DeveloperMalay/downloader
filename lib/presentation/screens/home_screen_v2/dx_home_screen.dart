@@ -1,8 +1,9 @@
-import 'package:downloader/presentation/screens/home_screen_v2/widgets/search_field.dart';
+import 'package:downloader/presentation/screens/home_screen_v2/widgets/dx_search_field.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/core.dart';
-import 'widgets/download_button.dart';
+import 'widgets/dx_download_button.dart';
+import 'widgets/dx_downloaded_media.dart';
 
 class DxHomeScreen extends StatefulWidget {
   const DxHomeScreen({super.key});
@@ -58,6 +59,20 @@ class _DxHomeScreenState extends State<DxHomeScreen> {
                   ),
                 )
         ],
+      ),
+      body: ListView.separated(
+        padding: const EdgeInsets.all(15),
+        itemBuilder: (context, index) {
+          return const DxDownlodedMedia(
+            image:
+                'https://images.pexels.com/photos/1133957/pexels-photo-1133957.jpeg?auto=compress&cs=tinysrgb&w=600',
+            fileName: 'Filename',
+            fileSize: '10 Mb',
+            date: '12/12/2023',
+          );
+        },
+        separatorBuilder: (context, index) => const SizedBox(height: 10),
+        itemCount: 100,
       ),
     );
   }
