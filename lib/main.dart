@@ -1,11 +1,13 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:downloader/presentation/screens/home_screen/cubit/download_cubit.dart';
+import 'package:downloader/presentation/screens/home_screen_v2/dx_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'presentation/presentation.dart';
+import 'core/core.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
@@ -15,19 +17,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Downloader',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: DxLightScheme().theme,
       home: MultiBlocProvider(
         providers: [
           BlocProvider(
             create: (context) => DownloadCubit(),
           ),
         ],
-        child: const HomeScreen(),
+        child: const DxHomeScreen(),
       ),
     );
   }

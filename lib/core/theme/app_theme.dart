@@ -70,7 +70,7 @@ class DxLightScheme extends BaseTheme {
 
   @override
   Color getPrimaryColor() {
-    return const Color(0xFFE6E6FA);
+    return const Color(0xFF6A5ACD);
   }
 
   @override
@@ -80,12 +80,12 @@ class DxLightScheme extends BaseTheme {
 
   @override
   Color getProgressBarColor() {
-    return const Color(0xFFE6E6FA);
+    return const Color(0xFF6A5ACD);
   }
 
   @override
   Color getSecondaryColor() {
-    return const Color(0xFFD8BFD8);
+    return const Color(0xFF6A5ACD);
   }
 
   @override
@@ -94,7 +94,7 @@ class DxLightScheme extends BaseTheme {
   }
 
   Color getStatusBarColor() {
-    return const Color(0xFFE6E6FA);
+    return const Color(0xFF6A5ACD);
   }
 
   @override
