@@ -1,9 +1,10 @@
-import 'dart:developer';
 import 'dart:io';
 
+import 'package:downloader/data/data.dart';
+import 'package:downloader/domain/domain.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../../models/image_data_model.dart';
@@ -13,44 +14,64 @@ part 'download_state.dart';
 class DownloadCubit extends Cubit<DownloadState> {
   DownloadCubit() : super(DownloadState.initial());
 
-  void startDownload({String? fileName, required String url}) async {
+  late DownloadFileUseCase _downloadFileUseCase;
+
+  void initialize() {
+    _downloadFileUseCase = GetIt.instance.get<DownloadFileUseCase>();
+  }
+
+  void downloadFiles({required String url}) async {
     emit(state.copyWith(status: DownloadStauts.loading));
-    Directory? dir = await getExternalStorageDirectory();
-    String dirPath = dir?.path ?? '';
-    String fileN = fileName ?? 'image';
     try {
-      var result = await downloadFile(url, fileN, dirPath);
-      emit(state.copyWith(status: DownloadStauts.loaded));
-      log('result $result');
+      Result<File, String> data = await _downloadFileUseCase.execute(url);
+      if (data.response != null) {
+        emit(state.copyWith(status: DownloadStauts.loaded));
+      } else {
+        emit(state.copyWith(status: DownloadStauts.error, error: data.error));
+      }
     } catch (e) {
-      emit(state.copyWith(status: DownloadStauts.error));
+      emit(state.copyWith(status: DownloadStauts.error, error: e.toString()));
     }
     getDownloadedImages();
   }
 
-  Future<String> downloadFile(String url, String fileName, String dir) async {
-    HttpClient httpClient = HttpClient();
-    File file;
-    String filePath = '';
+  // void startDownload({required String url}) async {
+  //   emit(state.copyWith(status: DownloadStauts.loading));
+  //   Directory? dir = await getExternalStorageDirectory();
+  //   String dirPath = dir?.path ?? '';
+  //   try {
+  //     var result = await downloadFile(url, dirPath);
+  //     emit(state.copyWith(status: DownloadStauts.loaded));
+  //     log('result $result');
+  //   } catch (e) {
+  //     emit(state.copyWith(status: DownloadStauts.error));
+  //   }
+  //   getDownloadedImages();
+  // }
 
-    try {
-      var request = await httpClient.getUrl(Uri.parse(url));
-      var response = await request.close();
-      final String fileName = Uri.parse(url).path.split("/").last;
-      if (response.statusCode == 200) {
-        var bytes = await consolidateHttpClientResponseBytes(response);
-        filePath = '$dir/$fileName';
-        file = File(filePath);
-        await file.writeAsBytes(bytes);
-      } else {
-        filePath = 'Error code: ${response.statusCode}';
-      }
-    } catch (ex) {
-      filePath = 'Can not fetch url';
-    }
+  // Future<String> downloadFile(String url, String dir) async {
+  //   HttpClient httpClient = HttpClient();
+  //   File file;
+  //   String filePath = '';
 
-    return filePath;
-  }
+  //   try {
+  //     var request = await httpClient.getUrl(Uri.parse(url));
+  //     var response = await request.close();
+  //     final String fileName = Uri.parse(url).path.split("/").last;
+  //     if (response.statusCode == 200) {
+  //       var bytes = await consolidateHttpClientResponseBytes(response);
+  //       filePath = '$dir/$fileName';
+  //       file = File(filePath);
+  //       await file.writeAsBytes(bytes);
+  //     } else {
+  //       filePath = 'Error code: ${response.statusCode}';
+  //     }
+  //   } catch (ex) {
+  //     filePath = 'Can not fetch url';
+  //   }
+
+  //   return filePath;
+  // }
 
   void getDownloadedImages() async {
     emit(state.copyWith(status: DownloadStauts.loading));

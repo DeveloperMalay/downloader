@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/core.dart';
+import 'core/di/di.dart';
 import 'presentation/presentation.dart';
 import 'presentation/screens/home_screen_v2/cubit/download_cubit.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  configureDependencies();
   runApp(const MyApp());
 }
 
