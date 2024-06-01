@@ -69,3 +69,31 @@ class DownloadCubit extends Cubit<DownloadState> {
     emit(state.copyWith(imageList: files, status: DownloadStauts.loaded));
   }
 }
+
+
+
+//  Future<PlatformFile?> urlToPlatformFile() async {
+//     try {
+//       if (this == null || (this?.isEmpty ?? true)) {
+//         return null;
+//       }
+
+//       http.Response response = await http.get(Uri.parse(this!));
+//       if (response.statusCode == 200) {
+//         Uint8List bytes = response.bodyBytes;
+
+//         PlatformFile platformFile = PlatformFile(
+//             path: this,
+//             name: getFileNameFromPath(),
+//             bytes: bytes,
+//             size: bytes.lengthInBytes,
+//             identifier: this);
+
+//         return platformFile;
+//       } else {
+//         return null;
+//       }
+//     } catch (e) {
+//       return null;
+//     }
+//   }
