@@ -15,6 +15,7 @@ class _DxHomeScreenState extends State<DxHomeScreen> {
   void initState() {
     urlController = TextEditingController();
     _downloadCubit = context.read<DownloadCubit>();
+    _downloadCubit.initialize();
     _downloadCubit.getDownloadedImages();
     super.initState();
   }
@@ -52,7 +53,7 @@ class _DxHomeScreenState extends State<DxHomeScreen> {
                         if (urlController.text.isNotEmpty) {
                           context
                               .read<DownloadCubit>()
-                              .startDownload(url: urlController.text);
+                              .downloadFiles(url: urlController.text);
                           urlController.clear();
                           setState(() {
                             showSearch = !showSearch;
