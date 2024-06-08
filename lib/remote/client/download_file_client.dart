@@ -14,6 +14,7 @@ class DonwloadFileClientImpl extends DonwloadFileClient {
     try {
       HttpClientRequest request = await httpClient.getUrl(Uri.parse(url));
       HttpClientResponse response = await request.close();
+      log('length ${request.contentLength}');
       final String fileName = Uri.parse(url).path.split("/").last;
       if (response.statusCode == 200) {
         var bytes = await consolidateHttpClientResponseBytes(response);

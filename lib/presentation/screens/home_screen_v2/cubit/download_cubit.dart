@@ -1,9 +1,9 @@
 import 'dart:io';
-
 import 'package:downloader/data/data.dart';
 import 'package:downloader/domain/domain.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -91,30 +91,73 @@ class DownloadCubit extends Cubit<DownloadState> {
   }
 }
 
+// class DownloadProvider extends ChangeNotifier {
+//   final _progressList = <double>[];
 
+//   void download(String downloadUrl, int index) async {
+//     NotificationService notificationService = NotificationService();
 
-//  Future<PlatformFile?> urlToPlatformFile() async {
+//     final String fileName = Uri.parse(downloadUrl).path.split("/").last;
+
+//     final dio = Dio();
+
 //     try {
-//       if (this == null || (this?.isEmpty ?? true)) {
-//         return null;
-//       }
-
-//       http.Response response = await http.get(Uri.parse(this!));
-//       if (response.statusCode == 200) {
-//         Uint8List bytes = response.bodyBytes;
-
-//         PlatformFile platformFile = PlatformFile(
-//             path: this,
-//             name: getFileNameFromPath(),
-//             bytes: bytes,
-//             size: bytes.lengthInBytes,
-//             identifier: this);
-
-//         return platformFile;
-//       } else {
-//         return null;
-//       }
-//     } catch (e) {
-//       return null;
+//       dio.download(downloadUrl, "/storage/emulated/0/Download/$fileName",
+//           onReceiveProgress: ((count, total) async {
+//         await Future.delayed(const Duration(seconds: 1), () {
+//           _progressList[index] = (count / total);
+//           notificationService.createNotification(
+//               100, ((count / total) * 100).toInt(), index);
+//           notifyListeners();
+//         });
+//       }));
+//     } on DioError catch (e) {
+//       print("error downloading file $e");
 //     }
 //   }
+// }
+
+class NotificationService {
+  static final NotificationService _notificationService =
+      NotificationService._internal();
+  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  final AndroidInitializationSettings _androidInitializationSettings =
+      const AndroidInitializationSettings('ic_launcher');
+
+  factory NotificationService() {
+    return _notificationService;
+  }
+
+  NotificationService._internal() {
+    init();
+  }
+
+  void init() async {
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
+      android: _androidInitializationSettings,
+    );
+    await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
+  void createNotification(int count, int i, int id) {
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'progress channel',
+      'progress channel',
+      channelDescription: 'progress channel description',
+      channelShowBadge: false,
+      importance: Importance.max,
+      priority: Priority.high,
+      onlyAlertOnce: true,
+      showProgress: true,
+      maxProgress: count,
+      progress: i,
+    );
+    var platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+    _flutterLocalNotificationsPlugin.show(id, 'progress notification title',
+        'progress notification body', platformChannelSpecifics,
+        payload: 'item x');
+  }
+}
