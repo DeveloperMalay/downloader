@@ -24,6 +24,7 @@ class DownloadCubit extends Cubit<DownloadState> {
     emit(state.copyWith(status: DownloadStauts.loading));
     try {
       Result<File, String> data = await _downloadFileUseCase.execute(url);
+      NotificationService().createNotification(100, 10, 0);
       if (data.response != null) {
         emit(state.copyWith(status: DownloadStauts.loaded));
       } else {
@@ -35,47 +36,14 @@ class DownloadCubit extends Cubit<DownloadState> {
     getDownloadedImages();
   }
 
-  // void startDownload({required String url}) async {
-  //   emit(state.copyWith(status: DownloadStauts.loading));
-  //   Directory? dir = await getExternalStorageDirectory();
-  //   String dirPath = dir?.path ?? '';
-  //   try {
-  //     var result = await downloadFile(url, dirPath);
-  //     emit(state.copyWith(status: DownloadStauts.loaded));
-  //     log('result $result');
-  //   } catch (e) {
-  //     emit(state.copyWith(status: DownloadStauts.error));
-  //   }
-  //   getDownloadedImages();
-  // }
-
-  // Future<String> downloadFile(String url, String dir) async {
-  //   HttpClient httpClient = HttpClient();
-  //   File file;
-  //   String filePath = '';
-
-  //   try {
-  //     var request = await httpClient.getUrl(Uri.parse(url));
-  //     var response = await request.close();
-  //     final String fileName = Uri.parse(url).path.split("/").last;
-  //     if (response.statusCode == 200) {
-  //       var bytes = await consolidateHttpClientResponseBytes(response);
-  //       filePath = '$dir/$fileName';
-  //       file = File(filePath);
-  //       await file.writeAsBytes(bytes);
-  //     } else {
-  //       filePath = 'Error code: ${response.statusCode}';
-  //     }
-  //   } catch (ex) {
-  //     filePath = 'Can not fetch url';
-  //   }
-
-  //   return filePath;
-  // }
-
   void getDownloadedImages() async {
     emit(state.copyWith(status: DownloadStauts.loading));
-    Directory? dir = await getExternalStorageDirectory();
+    Directory? dir;
+    if (Platform.isAndroid) {
+      dir = await getExternalStorageDirectory();
+    } else if (Platform.isIOS) {
+      dir = await getApplicationDocumentsDirectory();
+    }
     List<FileSystemEntity>? dirList = dir?.listSync();
     List<ImageDataModel> files = (dirList ?? []).map((file) {
       File fileData = File(file.path);
@@ -90,32 +58,6 @@ class DownloadCubit extends Cubit<DownloadState> {
     emit(state.copyWith(imageList: files, status: DownloadStauts.loaded));
   }
 }
-
-// class DownloadProvider extends ChangeNotifier {
-//   final _progressList = <double>[];
-
-//   void download(String downloadUrl, int index) async {
-//     NotificationService notificationService = NotificationService();
-
-//     final String fileName = Uri.parse(downloadUrl).path.split("/").last;
-
-//     final dio = Dio();
-
-//     try {
-//       dio.download(downloadUrl, "/storage/emulated/0/Download/$fileName",
-//           onReceiveProgress: ((count, total) async {
-//         await Future.delayed(const Duration(seconds: 1), () {
-//           _progressList[index] = (count / total);
-//           notificationService.createNotification(
-//               100, ((count / total) * 100).toInt(), index);
-//           notifyListeners();
-//         });
-//       }));
-//     } on DioError catch (e) {
-//       print("error downloading file $e");
-//     }
-//   }
-// }
 
 class NotificationService {
   static final NotificationService _notificationService =
@@ -135,9 +77,7 @@ class NotificationService {
 
   void init() async {
     final InitializationSettings initializationSettings =
-        InitializationSettings(
-      android: _androidInitializationSettings,
-    );
+        InitializationSettings(android: _androidInitializationSettings);
     await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
